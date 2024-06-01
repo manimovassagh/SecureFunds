@@ -7,12 +7,11 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `gorm:"uniqueIndex;not null"`
-	Password string `gorm:"not null"`
-	Accounts []Account
+	Username string    `gorm:"uniqueIndex;not null"`
+	Password string    `gorm:"not null"`
+	Accounts []Account `gorm:"foreignKey:UserID"`
 }
 
-// HashPassword hashes the user's password
 func (u *User) HashPassword(password string) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -22,7 +21,6 @@ func (u *User) HashPassword(password string) error {
 	return nil
 }
 
-// CheckPassword checks if the provided password is correct
 func (u *User) CheckPassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 }

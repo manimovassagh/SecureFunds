@@ -69,13 +69,17 @@ func TestSignup(t *testing.T) {
 	if assert.NoError(t, authHandler.Signup(c)) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
 
+		var response map[string]interface{}
+		json.Unmarshal(rec.Body.Bytes(), &response)
+
+		// Verify user creation
+		createdUser := response["user"].(map[string]interface{})
+		assert.Equal(t, "testuser", createdUser["username"])
+
 		// Verify account creation
-		var createdUser models.User
-		db.Where("username = ?", "testuser").First(&createdUser)
-		var createdAccount models.Account
-		db.Where("user_id = ?", createdUser.ID).First(&createdAccount)
+		createdAccount := response["account"].(map[string]interface{})
 		assert.NotNil(t, createdAccount)
-		assert.Equal(t, createdUser.ID, createdAccount.UserID)
+		assert.Equal(t, createdUser["ID"], createdAccount["UserID"])
 	}
 }
 

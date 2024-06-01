@@ -41,6 +41,11 @@ func (h *AuthHandler) Signup(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Error creating account"})
 	}
 
+	// Load user with the associated accounts
+	if err := h.DB.Preload("Accounts").First(user, user.ID).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Error loading user with accounts"})
+	}
+
 	return c.JSON(http.StatusCreated, user)
 }
 
