@@ -30,6 +30,17 @@ func (h *AuthHandler) Signup(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Error creating user"})
 	}
 
+	// Automatically create an account for the new user
+	account := models.Account{
+		UserID:      user.ID,
+		AccountType: "checking", // or any default account type
+		Balance:     0,
+	}
+
+	if err := h.DB.Create(&account).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Error creating account"})
+	}
+
 	return c.JSON(http.StatusCreated, user)
 }
 

@@ -68,6 +68,14 @@ func TestSignup(t *testing.T) {
 
 	if assert.NoError(t, authHandler.Signup(c)) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
+
+		// Verify account creation
+		var createdUser models.User
+		db.Where("username = ?", "testuser").First(&createdUser)
+		var createdAccount models.Account
+		db.Where("user_id = ?", createdUser.ID).First(&createdAccount)
+		assert.NotNil(t, createdAccount)
+		assert.Equal(t, createdUser.ID, createdAccount.UserID)
 	}
 }
 
