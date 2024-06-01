@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bank
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_HOST: localhost
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: bank
+      JWT_SECRET: your_jwt_secret_key
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: go test ./handlers
+
+      - name: Build
+        run: go build -o main .
+
+      - name: Start application
+        run: |
+          nohup ./main &
+          sleep 5
+        continue-on-error: true
+
+      - name: Test application
+        run: |
+          curl --request POST --url http://localhost:8080/signup --header 'Content-Type: application/json' --data '{"username": "testuser", "password": "testpassword"}'
+          curl --request POST --url http://localhost:8080/login --header 'Content-Type: application/json' --data '{"username": "testuser", "password": "testpassword"}'
