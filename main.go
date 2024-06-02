@@ -45,12 +45,20 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	// Validator
+	e.Validator = handlers.NewValidator()
+
 	// Routes
 	authHandler := &handlers.AuthHandler{DB: db}
 	e.POST("/signup", authHandler.Signup)
 	e.POST("/login", authHandler.Login)
 
-	// Protected route
+	// JWT Middleware config
+	jwtConfig := middleware.JWTConfig{
+		SigningKey: []byte(os.Getenv("JWT_SECRET")),
+	}
+
+	// Protected routes
 	e.GET("/protected", func(c echo.Context) error {
 		user := c.Get("user").(*jwt.Token)
 		claims := user.Claims.(jwt.MapClaims)
@@ -68,9 +76,10 @@ func main() {
 			"user_id":  userId,
 			"username": username,
 		})
-	}, middleware.JWTWithConfig(middleware.JWTConfig{
-		SigningKey: []byte(os.Getenv("JWT_SECRET")),
-	}))
+	}, middleware.JWTWithConfig(jwtConfig))
+
+	depositHandler := &handlers.DepositHandler{DB: db}
+	e.POST("/deposit", depositHandler.Deposit, middleware.JWTWithConfig(jwtConfig))
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

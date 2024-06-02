@@ -6,7 +6,7 @@ import (
 
 type Transaction struct {
 	gorm.Model
-	AccountID uint
-	Amount    float64 `gorm:"not null"`
-	Type      string  `gorm:"not null"`
+	AccountID uint    `gorm:"not null" json:"account_id"`
+	Amount    float64 `gorm:"not null" json:"amount"`
+	Type      string  `gorm:"not null" json:"type"` // "deposit" or "withdrawal"
 }

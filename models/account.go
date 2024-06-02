@@ -6,8 +6,8 @@ import (
 
 type Account struct {
 	gorm.Model
-	UserID       uint
-	AccountType  string  `gorm:"not null"`
-	Balance      float64 `gorm:"not null"`
-	Transactions []Transaction
+	UserID       uint          `gorm:"not null" json:"user_id"`
+	AccountType  string        `gorm:"not null" json:"account_type"`
+	Balance      float64       `gorm:"not null" json:"balance"`
+	Transactions []Transaction `gorm:"foreignKey:AccountID" json:"transactions"`
 }

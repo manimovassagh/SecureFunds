@@ -1,8 +1,7 @@
 {
   "info": {
-    "name": "ManBank",
-    "_postman_id": "12345-6789-0123-4567",
-    "description": "Postman collection for testing the ManBank application",
+    "name": "Bank API",
+    "description": "Postman collection for Bank API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -65,36 +64,58 @@
       "response": []
     },
     {
-      "name": "Protected Route",
+      "name": "Deposit",
       "request": {
-        "method": "GET",
+        "method": "POST",
         "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
           {
             "key": "Authorization",
             "value": "Bearer {{jwt_token}}",
             "type": "text"
           }
         ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"account_id\": 1,\n    \"amount\": 100.0\n}"
+        },
         "url": {
-          "raw": "http://localhost:8080/protected",
+          "raw": "http://localhost:8080/deposit",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "8080",
           "path": [
-            "protected"
+            "deposit"
           ]
         }
       },
       "response": []
     }
   ],
-  "variable": [
+  "event": [
     {
-      "key": "jwt_token",
-      "value": "",
-      "type": "string"
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          ""
+        ],
+        "type": "text/javascript"
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "if (pm.response.code === 200) {\n    var jsonData = pm.response.json();\n    if (pm.request.url.path.includes(\"login\")) {\n        pm.environment.set(\"jwt_token\", jsonData.token);\n    }\n}"
+        ],
+        "type": "text/javascript"
+      }
     }
   ]
 }
