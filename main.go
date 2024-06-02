@@ -87,5 +87,8 @@ func main() {
 	withdrawHandler := &handlers.WithdrawHandler{DB: db}
 	e.POST("/withdraw", withdrawHandler.Withdraw, middleware.JWTWithConfig(jwtConfig))
 
+	transferHandler := &handlers.TransferHandler{DB: db}
+	e.POST("/transfer", transferHandler.Transfer, middleware.JWTWithConfig(jwtConfig))
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
