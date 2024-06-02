@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
@@ -25,7 +26,7 @@ func (h *AccountHistoryHandler) GetAccountHistory(c echo.Context) error {
 	}
 
 	var account models.Account
-	if err := h.DB.Preload("Transactions").Preload("User").First(&account, accountID).Error; err != nil {
+	if err := h.DB.Preload("User").First(&account, accountID).Error; err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": "Account not found"})
 	}
 
@@ -33,10 +34,28 @@ func (h *AccountHistoryHandler) GetAccountHistory(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Unauthorized access"})
 	}
 
+	// Pagination parameters
+	page, err := strconv.Atoi(c.QueryParam("page"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	limit, err := strconv.Atoi(c.QueryParam("limit"))
+	if err != nil || limit < 1 {
+		limit = 10
+	}
+
+	var transactions []models.Transaction
+	if err := h.DB.Where("account_id = ?", accountID).Offset((page - 1) * limit).Limit(limit).Find(&transactions).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to retrieve transactions"})
+	}
+
 	response := map[string]interface{}{
 		"username":     account.User.Username,
 		"balance":      account.Balance,
-		"transactions": account.Transactions,
+		"transactions": transactions,
+		"page":         page,
+		"limit":        limit,
 	}
 
 	return c.JSON(http.StatusOK, response)

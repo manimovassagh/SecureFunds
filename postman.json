@@ -148,7 +148,7 @@
           }
         ],
         "url": {
-          "raw": "http://localhost:8080/account/1/history",
+          "raw": "http://localhost:8080/account/1/history?page=1&limit=10",
           "protocol": "http",
           "host": [
             "localhost"
@@ -158,6 +158,16 @@
             "account",
             "1",
             "history"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
           ]
         }
       },
