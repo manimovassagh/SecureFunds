@@ -37,14 +37,17 @@ func main() {
 	}
 
 	// Auto migrate models
-	db.AutoMigrate(&models.User{}, &models.Account{}, &models.Transaction{})
+	err = db.AutoMigrate(&models.User{}, &models.Account{}, &models.Transaction{})
+	if err != nil {
+		return
+	}
 
 	e := echo.New()
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
+	e.Use(middleware.CORS())
 	// Validator
 	e.Validator = handlers.NewValidator()
 
