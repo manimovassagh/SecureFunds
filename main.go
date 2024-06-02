@@ -81,5 +81,11 @@ func main() {
 	depositHandler := &handlers.DepositHandler{DB: db}
 	e.POST("/deposit", depositHandler.Deposit, middleware.JWTWithConfig(jwtConfig))
 
+	accountHistoryHandler := &handlers.AccountHistoryHandler{DB: db}
+	e.GET("/account/:account_id/history", accountHistoryHandler.GetAccountHistory, middleware.JWTWithConfig(jwtConfig))
+
+	withdrawHandler := &handlers.WithdrawHandler{DB: db}
+	e.POST("/withdraw", withdrawHandler.Withdraw, middleware.JWTWithConfig(jwtConfig))
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
