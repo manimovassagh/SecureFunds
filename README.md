@@ -145,4 +145,4 @@ You can import the Postman collection provided in the `postman_collection.json` 
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details..
