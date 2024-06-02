@@ -1,8 +1,6 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
 type Account struct {
 	gorm.Model
@@ -10,5 +8,5 @@ type Account struct {
 	AccountType  string        `gorm:"not null" json:"account_type"`
 	Balance      float64       `gorm:"not null" json:"balance"`
 	Transactions []Transaction `gorm:"foreignKey:AccountID" json:"transactions"`
-	User         User          `gorm:"foreignKey:UserID" json:"-"`
+	User         User          `gorm:"foreignKey:UserID" json:"user"`
 }

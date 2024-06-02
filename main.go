@@ -89,6 +89,7 @@ func main() {
 
 	transferHandler := &handlers.TransferHandler{DB: db}
 	e.POST("/transfer", transferHandler.Transfer, middleware.JWTWithConfig(jwtConfig))
-
+	transferHistoryHandler := &handlers.TransferHistoryHandler{DB: db}
+	e.GET("/account/:account_id/transfer-history", transferHistoryHandler.GetTransferHistory, middleware.JWTWithConfig(jwtConfig))
 	e.Logger.Fatal(e.Start(":8080"))
 }
